@@ -29,18 +29,21 @@ d3.csv("data.csv", function (err, censusData) {
    censusData.forEach(function (data) {
     data.poverty = +data.poverty;
     data.no_health_insurance = +data.no_health_insurance;
-  //  data.abbr = +data.abbr;
+    //data.abbr = data.abbr;
+   // console.log(data.abbr);
   });
 
   // Step 2: Create scale functions
   // ==============================
   var xLinearScale = d3.scaleLinear()
-    .domain([0, d3.max(censusData, d => d.poverty)])
+    .domain(d3.extent(censusData, d => d.poverty))
     .range([0, width]);
 
   var yLinearScale = d3.scaleLinear()
     .domain([0, d3.max(censusData, d => d.no_health_insurance)])
     .range([height, 0]);
+
+  
 
   // Step 3: Create axis functions
   // ==============================
@@ -66,16 +69,25 @@ d3.csv("data.csv", function (err, censusData) {
   .attr("cy", d => yLinearScale(d.no_health_insurance))
   .attr("r", "12")
   .attr("fill", "blue")
-  .attr("opacity", ".3");
-//   .append("text")
-//   .attr("x", "50%")
-//   .attr("y", "50%")
-//   .attr("text-anchor", "middle")
-//   .attr("fill","white")
-//   .attr("font-size","5px")
-//   .attr("font-family", "Arial")
-//   .attr("dy", ".3em")
-//   .attr("text",d => d.abbr)
+  .attr("opacity", ".3")
+ 
+ 
+ var txtGroup = chartGroup.selectAll("text")
+  .data(censusData)
+  .enter()
+  .append("text")
+  .text(d => d.abbr)
+  //.attr("x", d => xLinearScale(d.poverty))
+  //.attr("y", d => yLinearScale(d.no_health_insurance))
+  .attr("dx", d => xLinearScale(d.poverty))
+  .attr("dy", d => yLinearScale(d.no_health_insurance))
+  //.attr("dy", "1em")
+  .attr("class","stateText")
+  
+
+
+
+ 
 
   // Step 6: Initialize tool tip
   // ==============================
